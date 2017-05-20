@@ -91,7 +91,14 @@ class SocketClient
         // call stream_socket_client with custom error handler enabled
         $handler = new ErrorHandler(
             function ($address, $timeout, $flags) {
-                return stream_socket_client($address, $errno, $errstr, $timeout, $flags);
+                $options = [
+                    'ssl' => [
+                        'allow_self_signed' => true,
+                        'verify_peer_name' => false,
+                    ],
+                ];
+                $context = stream_context_create($options);
+                return stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context);
             },
             $this->address,
             $timeout,
